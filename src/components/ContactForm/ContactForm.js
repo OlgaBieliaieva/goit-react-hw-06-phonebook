@@ -1,11 +1,16 @@
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import shortid from 'shortid';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import PropTypes from 'prop-types';
+import { add, getContacts } from 'redux/contactsSlice';
 import css from './ContactForm.module.css';
 
-export default function ContactForm({ addContact }) {
+export default function ContactForm() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -25,9 +30,23 @@ export default function ContactForm({ addContact }) {
 
   const handleSubmit = e => {
     e.preventDefault(e);
-    addContact(name, number);
-
+    createContact(name, number);
     reset();
+  };
+
+  const createContact = (name, number) => {
+    const newContact = {
+      id: shortid.generate(),
+      name: name,
+      number: number,
+    };
+    const contactNames = [];
+    contacts.map(contact => contactNames.push(contact.name));
+
+    if (contactNames.includes(name)) {
+      return alert(`${name} is already in contacts`);
+    }
+    dispatch(add(newContact));
   };
 
   const showMessage = e => {
@@ -85,7 +104,3 @@ export default function ContactForm({ addContact }) {
     </form>
   );
 }
-
-ContactForm.propTypes = {
-  addContact: PropTypes.func.isRequired,
-};

@@ -1,7 +1,15 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+import { filter, getFilterQuery } from 'redux/filterSlice';
 import css from './Filter.module.css';
 
-const Filter = ({ filter, filterChangeHandler }) => {
+const Filter = () => {
+  const filterQuery = useSelector(getFilterQuery);
+  const dispatch = useDispatch();
+
+  const handleFilterChange = e => {
+    const { value } = e.target;
+    dispatch(filter(value));
+  };
   return (
     <label className={css.formLabel}>
       Find contacts by name
@@ -9,8 +17,8 @@ const Filter = ({ filter, filterChangeHandler }) => {
         className={css.formInput}
         type="text"
         name="filter"
-        value={filter}
-        onChange={filterChangeHandler}
+        value={filterQuery}
+        onChange={handleFilterChange}
         placeholder="type your query here..."
         autoComplete="off"
       />
@@ -19,8 +27,3 @@ const Filter = ({ filter, filterChangeHandler }) => {
 };
 
 export default Filter;
-
-Filter.propTypes = {
-  filter: PropTypes.string.isRequired,
-  filterChangeHandler: PropTypes.func.isRequired,
-};
